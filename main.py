@@ -5,9 +5,11 @@ def fetch_bids():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto("https://bidplus.gem.gov.in/all-bids")
-        page.wait_for_selector("div.block")  # wait until bid cards load
-        blocks = page.query_selector_all("div.block")
+        page.goto("https://bidplus.gem.gov.in/all-bids", timeout=60000)
+        # Wait for any bid card container
+        page.wait_for_selector("div.border", timeout=60000)
+
+        blocks = page.query_selector_all("div.border")
 
         bids = []
         for block in blocks:
