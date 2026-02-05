@@ -1,22 +1,24 @@
+import requests
+from bs4 import BeautifulSoup
 import json
-from scraper.gem_scraper import fetch_bids
+
+BASE_URL = "https://bidplus.gem.gov.in/all-bids"
+
+def fetch_bids():
+    response = requests.get(BASE_URL)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    bids = []
+    for block in soup.find_all("div", class_="block"):
+        bids.append(block.get_text(strip=True))
+
+    return bids
 
 def main():
     bids = fetch_bids()
-
-    # Filter only by instrument keywords (no location filter)
-    keywords = ["Microtome blades", "Cryostat Microtome", "Rotary Microtome", "Automated tissue processor"]
-
-    filtered_bids = [
-        b for b in bids
-        if any(k.lower() in b['title'].lower() for k in keywords)
-    ]
-
-    # Save results to JSON file
-    with open("bids.json", "w", encoding="utf-8") as f:
-        json.dump(filtered_bids, f, indent=4, ensure_ascii=False)
-
-    print(f"Saved {len(filtered_bids)} bids to bids.json")
+    with open("bids_raw.json", "w", encoding="utf-8") as f:
+        json.dump(bids, f, indent=4, ensure_ascii=False)
+    print(f"Saved {len(bids)} raw bids to bids_raw.json")
 
 if __name__ == "__main__":
     main()
