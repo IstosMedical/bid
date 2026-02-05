@@ -3,15 +3,23 @@ from playwright.sync_api import sync_playwright
 
 def fetch_bids():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # set to False so you can see the browser
+        browser = p.chromium.launch(headless=False)  # keep visible for debugging
         page = browser.new_page()
-        page.goto("https://bidplus.gem.gov.in/all-bids", timeout=60000)
-        
-        # Wait for the page body to load instead of a specific div
-        page.wait_for_selector("body", timeout=60000)
+        page.goto("https://gem.gov.in/", timeout=60000)
 
-        # Try a broader selector for bid cards
-        blocks = page.query_selector_all("div.block_list, div.block, div.border")
+        # Click login button
+        page.click("text=Login")
+
+        # Fill credentials (replace with your actual GeM username/password)
+        page.fill("input[name='userId']", "YOUR_USERNAME")
+        page.fill("input[name='password']", "YOUR_PASSWORD")
+        page.click("button[type='submit']")
+
+        # Navigate to All Bids page after login
+        page.goto("https://bidplus.gem.gov.in/all-bids", timeout=60000)
+        page.wait_for_selector("div.block_list", timeout=60000)
+
+        blocks = page.query_selector_all("div.block_list")
 
         bids = []
         for block in blocks:
