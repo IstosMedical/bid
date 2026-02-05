@@ -1,18 +1,19 @@
-import requests
-from bs4 import BeautifulSoup
 import json
-
-BASE_URL = "https://bidplus.gem.gov.in/all-bids"
+from playwright.sync_api import sync_playwright
 
 def fetch_bids():
-    response = requests.get(BASE_URL)
-    soup = BeautifulSoup(response.text, "html.parser")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://bidplus.gem.gov.in/all-bids")
+        page.wait_for_selector("div.block")  # wait until bid cards load
+        blocks = page.query_selector_all("div.block")
 
-    bids = []
-    for block in soup.find_all("div", class_="block"):
-        bids.append(block.get_text(strip=True))
-
-    return bids
+        bids = []
+        for block in blocks:
+            bids.append(block.inner_text())
+        browser.close()
+        return bids
 
 def main():
     bids = fetch_bids()
