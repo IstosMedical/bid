@@ -5,7 +5,7 @@ def main():
     bids = fetch_bids()
 
     # Filter for relevant instruments in Karnataka
-    keywords = ["Microtome", "Tissue Processor", "Cryostat", "Histopathology"]
+    keywords = ["Microtome blades", "Cryostat Microtome", "Rotary Microtome", "Automated tissue processor"]
     state_filter = "Karnataka"
 
     filtered_bids = [
@@ -15,7 +15,7 @@ def main():
     ]
 
     # Save results to JSON file
-    with open("bids.json", "w", encoding="utf-8") as f:
+    with open(r"C:\Users\ISTOS-ADMIN\bid\bids.json", "w", encoding="utf-8") as f:
         json.dump(filtered_bids, f, indent=4, ensure_ascii=False)
 
     print(f"Saved {len(filtered_bids)} bids to bids.json")
